@@ -1,0 +1,27 @@
+{
+  "name": "e",
+  "version": "1.0.0",
+  "main": "./src/server.js",
+  "scripts": {
+    "start:dev": "nodemon ./src/server.js",
+    "start:prod": "NODE_ENV=production nodemon ./src/server.js",
+    "lint": "eslint ./src/ --ext .js"
+  },
+  "dependencies": {
+    "compression": "^1.8.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7",
+    "eslint": "8",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.2.3",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.3"
+  }
+}
