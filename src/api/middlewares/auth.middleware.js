@@ -1,4 +1,4 @@
-const { COOKIES } = require('../../constants');
+const { COOKIES, ERROR_MESSAGES } = require('../../constants');
 const tokenBlackListModel = require('../../models/tokenBlackList.model');
 const userModel = require('../../models/user.model');
 const CookieProvider = require('../../providers/cookie.provider');
@@ -7,27 +7,27 @@ const AppError = require('../../utils/appError.utils');
 const catchAsync = require('../../utils/catchAsync.utils');
 
 class AuthMiddleware {
-  static verify = catchAsync(async (req, res, next) => {
+  static verify = catchAsync(async (req, _, next) => {
     const token = CookieProvider.get({ req, key: COOKIES.TOKEN });
 
-    // Token is not exist
+    // Token not provided
     if (!token) {
-      return next(new AppError('Access denied', 401));
+      return next(new AppError(ERROR_MESSAGES.UNAUTHORIZED, 401));
     }
 
     const isTokenInBlackList = await tokenBlackListModel.findOne({ token });
 
-    // Token is expired
+    // Token expired
     if (isTokenInBlackList) {
-      return next(new AppError('Access denied', 401));
+      return next(new AppError(ERROR_MESSAGES.UNAUTHORIZED, 401));
     }
 
     const decoded = await JwtProvider.decode(token);
     const isUserExist = await userModel.findById(decoded.userId);
 
-    // User was deleted
+    // User deleted
     if (!isUserExist) {
-      return next(new AppError('User is not exists', 401));
+      return next(new AppError(ERROR_MESSAGES.UNAUTHORIZED, 401));
     }
 
     req.userId = decoded.userId;
