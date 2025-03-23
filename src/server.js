@@ -10,7 +10,7 @@ const { PORT, DATABASE_URL } = process.env;
 mongoose
   .connect(DATABASE_URL)
   .then(() => {
-    console.log(`🚀 Database is connected`);
+    console.log('🚀 Database is connected');
   })
   .catch((error) => {
     console.log(`Database isn't connected: ${error}`);

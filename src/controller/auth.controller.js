@@ -1,7 +1,7 @@
 const JwtProvider = require('../providers/jwt.provider');
 const cookieProvider = require('../providers/cookie.provider');
 const userModel = require('../models/user.model');
-const { COOKIES } = require('../constants');
+const { COOKIES, ERROR_MESSAGES } = require('../constants');
 const tokenBlackListModel = require('../models/tokenBlackList.model');
 const catchAsync = require('../utils/catchAsync.utils');
 const AppError = require('../utils/appError.utils');
@@ -11,13 +11,13 @@ class AuthController {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return next(new AppError('Please provide an email and password', 400));
+      return next(new AppError(ERROR_MESSAGES.PROVIDE_CREDENTIALS, 401));
     }
 
     const user = await userModel.findOne({ email });
 
     if (user) {
-      return next(new AppError('User is already exist', 400));
+      return next(new AppError(ERROR_MESSAGES.USER_EXISTS, 409));
     }
 
     const userCreated = await userModel.create({ email, password });
@@ -37,19 +37,19 @@ class AuthController {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return next(new AppError('Please provide an email and password', 400));
+      return next(new AppError(ERROR_MESSAGES.PROVIDE_CREDENTIALS, 401));
     }
 
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      return next(new AppError('User is not exist', 404));
+      return next(new AppError(ERROR_MESSAGES.PROVIDE_CREDENTIALS, 401));
     }
 
     const isPasswordMatched = await user.comparePasswords(password);
 
     if (!isPasswordMatched) {
-      return next(new AppError('The credentials are not valid', 401));
+      return next(new AppError(ERROR_MESSAGES.PROVIDE_CREDENTIALS, 401));
     }
 
     const tokenCreated = await JwtProvider.get(user._id);
@@ -59,7 +59,7 @@ class AuthController {
       value: tokenCreated,
     });
 
-    return res.status(200).json({
+    return res.status(201).json({
       token: tokenCreated,
     });
   });
@@ -71,7 +71,7 @@ class AuthController {
     });
 
     if (!token) {
-      return next(new AppError('The credentials are not valid', 401));
+      return next(new AppError(ERROR_MESSAGES.UNAUTHORIZED, 401));
     }
 
     await tokenBlackListModel.create({ token });
@@ -80,7 +80,7 @@ class AuthController {
       key: COOKIES.TOKEN,
     });
 
-    return res.status(200).json({ message: 'Signed out successfully' });
+    return res.sendStatus(200);
   });
 }
 

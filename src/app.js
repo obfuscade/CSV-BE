@@ -6,6 +6,7 @@ const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const { CORS_OPTIONS, LIMIT_OPTIONS } = require('./constants');
 const authRouter = require('./api/routes/auth.route');
+const fileRouter = require('./api/routes/file.route');
 const ErrorController = require('./controller/error.controller');
 const AppError = require('./utils/appError.utils');
 
@@ -24,7 +25,7 @@ app.use(express.json()).use(cookieParser()).use(mongoSanitize());
 app.use(compression());
 
 // Routes
-app.use('/auth', authRouter);
+app.use('/auth', authRouter).use('/upload', fileRouter);
 
 // 404 Handler
 app.use('*', (req, res, next) => {
