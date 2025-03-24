@@ -5,8 +5,8 @@
 ## Prerequisites
 Make sure you have the following installed:
 - [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/) (if applicable)
-- [MongoDB](https://www.mongodb.com/) (if applicable)
+- [Node.js](https://nodejs.org/)
+- [MongoDB](https://www.mongodb.com/)
 
 ## 1. Install MongoDB
 For Debian/Ubuntu:
