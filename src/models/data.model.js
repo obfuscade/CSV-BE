@@ -12,8 +12,8 @@ const dataSchema = new Schema(
 );
 
 // Delete before to save a new one
-dataSchema.pre('save', async (next) => {
-  await model('Data').deleteMany({});
+dataSchema.pre('save', async function (next) {
+  await model('Data').deleteMany({ userId: this.userId });
 
   next();
 });
