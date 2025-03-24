@@ -1,4 +1,4 @@
-const { COOKIES, ERROR_MESSAGES } = require('../../constants');
+const { COOKIES } = require('../../constants');
 const tokenBlackListModel = require('../../models/tokenBlackList.model');
 const userModel = require('../../models/user.model');
 const CookieProvider = require('../../providers/cookie.provider');
@@ -12,14 +12,14 @@ class AuthMiddleware {
 
     // Token not provided
     if (!token) {
-      return next(new AppError(ERROR_MESSAGES.UNAUTHORIZED, 401));
+      return next(new AppError('Unauthorized', 401));
     }
 
     const isTokenInBlackList = await tokenBlackListModel.findOne({ token });
 
     // Token expired
     if (isTokenInBlackList) {
-      return next(new AppError(ERROR_MESSAGES.UNAUTHORIZED, 401));
+      return next(new AppError('Unauthorized', 401));
     }
 
     const decoded = await JwtProvider.decode(token);
@@ -27,7 +27,7 @@ class AuthMiddleware {
 
     // User deleted
     if (!isUserExist) {
-      return next(new AppError(ERROR_MESSAGES.UNAUTHORIZED, 401));
+      return next(new AppError('Unauthorized', 401));
     }
 
     req.userId = decoded.userId;

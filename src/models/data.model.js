@@ -1,32 +1,34 @@
-const mongoose = require('mongoose');
+const { ObjectId, Schema, model } = require('mongoose');
 
-const dataSchema = new mongoose.Schema(
+const dataSchema = new Schema(
   {
-    headers: mongoose.Schema.Types.Mixed,
-    data: mongoose.Schema.Types.Mixed,
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+    headers: Schema.Types.Mixed,
+    data: Schema.Types.Mixed,
+    userId: { type: Schema.Types.ObjectId, ref: 'users' },
   },
   {
     versionKey: false,
   }
 );
 
+// Delete before to save a new one
 dataSchema.pre('save', async (next) => {
-  await mongoose.model('Data').deleteMany({});
+  await model('Data').deleteMany({});
 
   next();
 });
 
+// Aggregate the values
 dataSchema.statics.getAggregatedValues = async function ({
   userId,
   limit,
   start,
 }) {
   const response = await this.aggregate([
-    { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+    { $match: { $expr: { $eq: ['$userId', { $toObjectId: userId }] } } },
     {
       $project: {
-        // +1 to check if there are more data to prevent extra request
+        // +1 - to check if there are more data to prevent extra request
         data: { $slice: ['$data', start, limit + 1] },
         headers: 1,
       },
@@ -48,4 +50,4 @@ dataSchema.statics.getAggregatedValues = async function ({
   return result;
 };
 
-module.exports = mongoose.model('Data', dataSchema, 'data');
+module.exports = model('Data', dataSchema, 'data');
