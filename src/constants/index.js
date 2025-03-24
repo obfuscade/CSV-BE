@@ -6,19 +6,6 @@ const AppError = require('../utils/appError.utils');
 const { ORIGIN, METHODS, ALLOWED_HEADERS, OPTIONS_SUCCESS_STATUS } =
   process.env;
 
-const ERROR_MESSAGES = {
-  UNAUTHORIZED: 'Unauthorized',
-  TOO_MANY_REQUEST: 'Too many requests, please try again later',
-  ONLY_CSV: 'Only CSV files are allowed',
-  CSV: 'Error processing CSV file',
-  CLEAN_FILE: 'Error cleaning up uploaded file',
-  NO_FILE_UPLOADED: 'No file uploaded',
-  PROVIDE_CREDENTIALS: 'Please provide correct credentials',
-  USER_EXISTS: 'User is already exist',
-  INTERNAL_ERROR: 'Internal Error',
-  WORKER_ERROR: (error) => `Worker error: ${error}`,
-};
-
 const CORS_OPTIONS = {
   origin: ORIGIN,
   methods: METHODS.split(','),
@@ -32,7 +19,7 @@ const LIMIT_OPTIONS = rateLimit({
   limit: 100, // 100 req per 15 minutes
   standardHeaders: 'draft-8',
   legacyHeaders: false,
-  message: ERROR_MESSAGES.TOO_MANY_REQUEST,
+  message: 'Too many requests, please try again later',
 });
 
 const MULTER_OPTIONS = multer({
@@ -41,7 +28,7 @@ const MULTER_OPTIONS = multer({
   fileFilter: (_, file, cb) =>
     file.mimetype === 'text/csv'
       ? cb(null, true)
-      : cb(new AppError(ERROR_MESSAGES.ONLY_CSV, 403), false),
+      : cb(new AppError('Only CSV files are allowed', 403), false),
 });
 
 const COOKIES = {
@@ -49,7 +36,6 @@ const COOKIES = {
 };
 
 module.exports = {
-  ERROR_MESSAGES,
   MULTER_OPTIONS,
   LIMIT_OPTIONS,
   COOKIES,
